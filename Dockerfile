@@ -10,9 +10,11 @@ RUN ln -sf /bin/bash /bin/sh
 RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y \
+    build-essential \
     curl \
+    git \
     python3 \
-    build-essential
+    python3-poetry
 
 # Install the riscv toolchain
 RUN touch ~/.bashrc && chmod +x ~/.bashrc

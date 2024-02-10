@@ -1,0 +1,22 @@
+[[package]]
+name = "makeelf"
+version = "0.3.5"
+description = "ELF reader-writer library"
+category = "main"
+optional = false
+python-versions = "*"
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/v3l0c1r4pt0r/makeelf.git"
+reference = "19d8418"
+resolved_reference = "19d84181bf0b5d8b42099eaedf3628cd46bfe4d1"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.10"
+content-hash = "22e953897de9a8c609efd8a30a876adc6b0f09e8d88d1e8ac6537dbdd8daad31"
+
+[metadata.files]
+makeelf = []
