@@ -13,10 +13,75 @@ url = "https://github.com/v3l0c1r4pt0r/makeelf.git"
 reference = "19d8418"
 resolved_reference = "19d84181bf0b5d8b42099eaedf3628cd46bfe4d1"
 
+[[package]]
+name = "mypy"
+version = "1.8.0"
+description = "Optional static typing for Python"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+mypy-extensions = ">=1.0.0"
+tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
+typing-extensions = ">=4.1.0"
+
+[package.extras]
+dmypy = ["psutil (>=4.0)"]
+install-types = ["pip"]
+mypyc = ["setuptools (>=50)"]
+reports = ["lxml"]
+
+[[package]]
+name = "mypy-extensions"
+version = "1.0.0"
+description = "Type system extensions for programs checked with the mypy type checker."
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
+name = "pycodestyle"
+version = "2.11.1"
+description = "Python style guide checker"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "result"
+version = "0.16.0"
+description = "A Rust-like result type for Python"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "tomli"
+version = "2.0.1"
+description = "A lil' TOML parser"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "typing-extensions"
+version = "4.9.0"
+description = "Backported and Experimental Type Hints for Python 3.8+"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "22e953897de9a8c609efd8a30a876adc6b0f09e8d88d1e8ac6537dbdd8daad31"
+content-hash = "78dd8518ac7f22ad4dfcd433b8729e5beee6dda37d0c91c5a6dfd9fa1c983392"
 
 [metadata.files]
 makeelf = []
+mypy = []
+mypy-extensions = []
+pycodestyle = []
+result = []
+tomli = []
+typing-extensions = []

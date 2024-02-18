@@ -30,8 +30,7 @@ docker-shell:
 
 # Run any other Makefile target within the Docker container
 docker-%:
-	$(DOCKER_CMD) /bin/bash -c -- \
-		make $*
+	$(DOCKER_CMD) /bin/bash -c -- make $*
 
 .PHONY: clean
 clean:
