@@ -24,8 +24,9 @@ from makeelf.elfsect import STB as SYMTAB_BINDING
 
 SCRIPT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 SOURCES_DIR = SCRIPT_DIR / 'sources'
-ORIGINAL_BINARY = SOURCES_DIR / 'bootrom.bin'
+ORIGINAL_BINARY = SOURCES_DIR / 'original_bootrom.bin'
 BUILD_DIR = Path('out')
+DATA_SECTION_BIN = BUILD_DIR / 'data_section.bin'
 # I believe that the text section spans from the beginning of ORIGINAL_BINARY
 # to address TEXT_SECTION_LENGTH (exclusive) and that the remainder of the file
 # is data of some sort.
@@ -144,13 +145,17 @@ def main():
     assert len(text_section_contents) + \
            len(data_section_contents) == len(contents)
 
+    os.makedirs(BUILD_DIR, exist_ok=True)
+
+    with open(DATA_SECTION_BIN, 'wb') as f:
+        f.write(data_section_contents)
+
     init_and_vector_code: bytes = text_section_contents[:0x200]
 
     elf = create_elf_from_original_binary(
         text_section_contents, data_section_contents)
 
     # Write `.elf` file version of original binary
-    os.makedirs(BUILD_DIR, exist_ok=True)
     binary_as_elf_file = BUILD_DIR / (ORIGINAL_BINARY.stem + '.elf')
     with open(binary_as_elf_file, 'wb') as f:
         f.write(bytes(elf))
@@ -212,7 +217,7 @@ def create_startup_asm_file(init_and_vector_code: bytes):
         asm_lines.append(f'  .word   {label}')
         global_labels_to_add.setdefault(word, []).append(label)
 
-    asm_lines.append(f'  .word   _start') # defined in this file
+    asm_lines.append(f'  .word   _start')  # defined in this file
     assert words[15] == 0
     asm_lines.append('  .word   0')
     add('NMI_Handler', words[16])
@@ -239,96 +244,29 @@ def create_startup_asm_file(init_and_vector_code: bytes):
 
     asm_lines.append('# External interrupts')
 
-    ext_interrupts = [
-        'WWDG_IRQHandler',
-        'PVD_IRQHandler',
-        'TAMPER_IRQHandler',
-        'RTC_IRQHandler',
-        'FLASH_IRQHandler',
-        'RCC_IRQHandler',
-        'EXTI0_IRQHandler',
-        'EXTI1_IRQHandler',
-        'EXTI2_IRQHandler',
-        'EXTI3_IRQHandler',
-        'EXTI4_IRQHandler',
-        'DMA1_Channel1_IRQHandler',
-        'DMA1_Channel2_IRQHandler',
-        'DMA1_Channel3_IRQHandler',
-        'DMA1_Channel4_IRQHandler',
-        'DMA1_Channel5_IRQHandler',
-        'DMA1_Channel6_IRQHandler',
-        'DMA1_Channel7_IRQHandler',
-        'ADC1_2_IRQHandler',
-        'USB_HP_CAN1_TX_IRQHandler',
-        'USB_LP_CAN1_RX0_IRQHandler',
-        'CAN1_RX1_IRQHandler',
-        'CAN1_SCE_IRQHandler',
-        'EXTI9_5_IRQHandler',
-        'TIM1_BRK_IRQHandler',
-        'TIM1_UP_IRQHandler',
-        'TIM1_TRG_COM_IRQHandler',
-        'TIM1_CC_IRQHandler',
-        'TIM2_IRQHandler',
-        'TIM3_IRQHandler',
-        'TIM4_IRQHandler',
-        'I2C1_EV_IRQHandler',
-        'I2C1_ER_IRQHandler',
-        'I2C2_EV_IRQHandler',
-        'I2C2_ER_IRQHandler',
-        'SPI1_IRQHandler',
-        'SPI2_IRQHandler',
-        'USART1_IRQHandler',
-        'USART2_IRQHandler',
-        'USART3_IRQHandler',
-        'EXTI15_10_IRQHandler',
-        'RTCAlarm_IRQHandler',
-        'USBWakeUp_IRQHandler',
-        'TIM8_BRK_IRQHandler',
-        'TIM8_UP_IRQHandler',
-        'TIM8_TRG_COM_IRQHandler',
-        'TIM8_CC_IRQHandler',
-        'RNG_IRQHandler',
-        'FSMC_IRQHandler',
-        'SDIO_IRQHandler',
-        'TIM5_IRQHandler',
-        'SPI3_IRQHandler',
-        'UART4_IRQHandler',
-        'UART5_IRQHandler',
-        'TIM6_IRQHandler',
-        'TIM7_IRQHandler',
-        'DMA2_Channel1_IRQHandler',
-        'DMA2_Channel2_IRQHandler',
-        'DMA2_Channel3_IRQHandler',
-        'DMA2_Channel4_IRQHandler',
-        'DMA2_Channel5_IRQHandler',
-        'ETH_IRQHandler',
-        'ETH_WKUP_IRQHandler',
-        'CAN2_TX_IRQHandler',
-        'CAN2_RX0_IRQHandler',
-        'CAN2_RX1_IRQHandler',
-        'CAN2_SCE_IRQHandler',
-        'OTG_FS_IRQHandler',
-        'USBHSWakeup_IRQHandler',
-        'USBHS_IRQHandler',
-        'DVP_IRQHandler',
-        'UART6_IRQHandler',
-        'UART7_IRQHandler',
-        'UART8_IRQHandler',
-        'TIM9_BRK_IRQHandler',
-        'TIM9_UP_IRQHandler',
-        'TIM9_TRG_COM_IRQHandler',
-        'TIM9_CC_IRQHandler',
-        'TIM10_BRK_IRQHandler',
-        'TIM10_UP_IRQHandler',
-        'TIM10_TRG_COM_IRQHandler',
-        'TIM10_CC_IRQHandler',
-        'DMA2_Channel6_IRQHandler',
-        'DMA2_Channel7_IRQHandler',
-        'DMA2_Channel8_IRQHandler',
-        'DMA2_Channel9_IRQHandler',
-        'DMA2_Channel10_IRQHandler',
-        'DMA2_Channel11_IRQHandler',
-    ]
+    ext_interrupts = ['WWDG_IRQHandler', 'PVD_IRQHandler', 'TAMPER_IRQHandler', 'RTC_IRQHandler', 'FLASH_IRQHandler',
+                      'RCC_IRQHandler', 'EXTI0_IRQHandler', 'EXTI1_IRQHandler', 'EXTI2_IRQHandler', 'EXTI3_IRQHandler',
+                      'EXTI4_IRQHandler', 'DMA1_Channel1_IRQHandler', 'DMA1_Channel2_IRQHandler',
+                      'DMA1_Channel3_IRQHandler', 'DMA1_Channel4_IRQHandler', 'DMA1_Channel5_IRQHandler',
+                      'DMA1_Channel6_IRQHandler', 'DMA1_Channel7_IRQHandler', 'ADC1_2_IRQHandler',
+                      'USB_HP_CAN1_TX_IRQHandler', 'USB_LP_CAN1_RX0_IRQHandler', 'CAN1_RX1_IRQHandler',
+                      'CAN1_SCE_IRQHandler', 'EXTI9_5_IRQHandler', 'TIM1_BRK_IRQHandler', 'TIM1_UP_IRQHandler',
+                      'TIM1_TRG_COM_IRQHandler', 'TIM1_CC_IRQHandler', 'TIM2_IRQHandler', 'TIM3_IRQHandler',
+                      'TIM4_IRQHandler', 'I2C1_EV_IRQHandler', 'I2C1_ER_IRQHandler', 'I2C2_EV_IRQHandler',
+                      'I2C2_ER_IRQHandler', 'SPI1_IRQHandler', 'SPI2_IRQHandler', 'USART1_IRQHandler',
+                      'USART2_IRQHandler', 'USART3_IRQHandler', 'EXTI15_10_IRQHandler', 'RTCAlarm_IRQHandler',
+                      'USBWakeUp_IRQHandler', 'TIM8_BRK_IRQHandler', 'TIM8_UP_IRQHandler', 'TIM8_TRG_COM_IRQHandler',
+                      'TIM8_CC_IRQHandler', 'RNG_IRQHandler', 'FSMC_IRQHandler', 'SDIO_IRQHandler', 'TIM5_IRQHandler',
+                      'SPI3_IRQHandler', 'UART4_IRQHandler', 'UART5_IRQHandler', 'TIM6_IRQHandler', 'TIM7_IRQHandler',
+                      'DMA2_Channel1_IRQHandler', 'DMA2_Channel2_IRQHandler', 'DMA2_Channel3_IRQHandler',
+                      'DMA2_Channel4_IRQHandler', 'DMA2_Channel5_IRQHandler', 'ETH_IRQHandler', 'ETH_WKUP_IRQHandler',
+                      'CAN2_TX_IRQHandler', 'CAN2_RX0_IRQHandler', 'CAN2_RX1_IRQHandler', 'CAN2_SCE_IRQHandler',
+                      'OTG_FS_IRQHandler', 'USBHSWakeup_IRQHandler', 'USBHS_IRQHandler', 'DVP_IRQHandler',
+                      'UART6_IRQHandler', 'UART7_IRQHandler', 'UART8_IRQHandler', 'TIM9_BRK_IRQHandler',
+                      'TIM9_UP_IRQHandler', 'TIM9_TRG_COM_IRQHandler', 'TIM9_CC_IRQHandler', 'TIM10_BRK_IRQHandler',
+                      'TIM10_UP_IRQHandler', 'TIM10_TRG_COM_IRQHandler', 'TIM10_CC_IRQHandler',
+                      'DMA2_Channel6_IRQHandler', 'DMA2_Channel7_IRQHandler', 'DMA2_Channel8_IRQHandler',
+                      'DMA2_Channel9_IRQHandler', 'DMA2_Channel10_IRQHandler', 'DMA2_Channel11_IRQHandler', ]
 
     for i in range(30, 30 + len(ext_interrupts)):
         add(ext_interrupts[i - 30], words[i])
@@ -388,12 +326,13 @@ def create_assemblable_source(original_binary_as_elf_file: Path, init_and_vector
                 sys.exit(1)
 
     output_asm_lines = massage_asm(asm_lines_parsed, target_branch_label, global_labels_to_add)
-    with open(BUILD_DIR / 'basic.s', 'w') as out:
+    with open(BUILD_DIR / 'main.s', 'w') as out:
         for line in output_asm_lines:
             out.write(line + '\n')
 
 
-def massage_asm(asm_lines: list[AsmInstrLine], branch_label: str, global_labels_to_add: dict[int,list[str]]) -> list[str]:
+def massage_asm(asm_lines: list[AsmInstrLine], branch_label: str, global_labels_to_add: dict[int, list[str]]) -> list[
+    str]:
     def lui_instr_can_be_compressed(instr: int) -> bool:
         imm = get_bits(instr, start=12, end=31)
         rd = get_bits(instr, start=7, end=11)
@@ -449,7 +388,7 @@ def massage_asm(asm_lines: list[AsmInstrLine], branch_label: str, global_labels_
         if line.jump_target_label:
             branch_targets_map.setdefault(line.jump_target_offset, []).append(line)
 
-    output_asm_lines: list[str] = []
+    output_asm_lines: list[str] = ['.text', '']
 
     for line in asm_lines:
         norvc_emitted = False
@@ -487,6 +426,10 @@ def massage_asm(asm_lines: list[AsmInstrLine], branch_label: str, global_labels_
 
         if norvc_emitted:
             output_asm_lines.append('.option rvc;')
+
+    output_asm_lines.append('')
+    output_asm_lines.append('.data')
+    output_asm_lines.append(f'.incbin "{DATA_SECTION_BIN}"')
 
     return output_asm_lines
 

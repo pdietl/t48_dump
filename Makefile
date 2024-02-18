@@ -1,8 +1,7 @@
 MAKEFILE_PATH     := $(abspath $(lastword $(MAKEFILE_LIST)))
 MAKEFILE_DIR      := $(dir $(MAKEFILE_PATH))
+MAKEFILE_DIR      := $(MAKEFILE_DIR:/=)
 DOCKER_IMAGE_NAME := ghcr.io/pdietl/t48-dump:2
-
-# Docker things
 
 DOCKER_CMD := \
 	docker run -ti --rm \
@@ -12,6 +11,26 @@ DOCKER_CMD := \
 		-v '$(MAKEFILE_DIR):$(MAKEFILE_DIR)' \
 		-w '$(MAKEFILE_DIR)' \
 		$(DOCKER_IMAGE_NAME)
+
+SHELL   := /bin/bash
+CROSS   := riscv-none-elf-
+LD      := $(CROSS)ld
+AS      := $(CROSS)as
+ASFLAGS := -march=rv32gc
+B       := $(MAKEFILE_DIR)/out
+
+VPATH := $(MAKEFILE_DIR)/out
+
+$(B)/bootloader.elf: link.ld $(B)/startup.o $(B)/main.o
+	$(LD) -o $@ -T $^
+
+%.o: %.s
+	$(AS) -o $@ $(ASFLAGS) $^ -a=$@.list
+
+$(B)/startup.s $(B)/main.s&: make_elf.py
+	./$<
+
+### Docker targets ###
 
 # Build the Docker image
 .PHONY: docker-build
@@ -31,6 +50,8 @@ docker-shell:
 # Run any other Makefile target within the Docker container
 docker-%:
 	$(DOCKER_CMD) /bin/bash -c -- make $*
+
+### Other targets ###
 
 .PHONY: clean
 clean:
