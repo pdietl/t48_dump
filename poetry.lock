@@ -14,6 +14,14 @@ reference = "19d8418"
 resolved_reference = "19d84181bf0b5d8b42099eaedf3628cd46bfe4d1"
 
 [[package]]
+name = "more-itertools"
+version = "10.2.0"
+description = "More routines for operating on iterables, beyond itertools"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
 name = "mypy"
 version = "1.8.0"
 description = "Optional static typing for Python"
@@ -75,10 +83,11 @@ python-versions = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "78dd8518ac7f22ad4dfcd433b8729e5beee6dda37d0c91c5a6dfd9fa1c983392"
+content-hash = "5643e6fc1795abb334abdd74bc9aff56aa8fbd7726ad31599e570e52ac3b6653"
 
 [metadata.files]
 makeelf = []
+more-itertools = []
 mypy = []
 mypy-extensions = []
 pycodestyle = []

@@ -8,6 +8,7 @@ authors = ["Pete Dietl <petedietl@gmail.com>"]
 python = "^3.10"
 makeelf = { git = "https://github.com/v3l0c1r4pt0r/makeelf.git", rev = "19d8418" }
 result = "^0.16.0"
+more-itertools = "^10.2.0"
 
 [tool.poetry.dev-dependencies]
 pycodestyle = "^2.11.1"
