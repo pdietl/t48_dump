@@ -76,14 +76,14 @@ python-versions = ">=3.7"
 name = "typing-extensions"
 version = "4.9.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "5643e6fc1795abb334abdd74bc9aff56aa8fbd7726ad31599e570e52ac3b6653"
+content-hash = "82659cc37a9f0cb58fcc3e878cbdca8f8039d6d3772d841dcb8ac83c7a9cd107"
 
 [metadata.files]
 makeelf = []
