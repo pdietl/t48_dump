@@ -17,7 +17,7 @@ SHELL   := /bin/bash
 CROSS   := riscv-none-elf-
 LD      := $(CROSS)ld
 AS      := $(CROSS)as
-ASFLAGS := -march=rv32gc
+ASFLAGS := -march=rv32gc -mabi=ilp32f
 B       := $(MAKEFILE_DIR)/out
 
 VPATH := $(MAKEFILE_DIR)/out
